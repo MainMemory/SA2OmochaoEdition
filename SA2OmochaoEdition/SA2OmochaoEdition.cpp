@@ -85,6 +85,13 @@ __declspec(naked) void LoadMessageLists_r()
 	}
 }
 
+void *loc_43C978 = (void*)0x43C978;
+__declspec(naked) void ShowBossHint()
+{
+	*(short*)0x1934BE8 = 1;
+	__asm {		jmp loc_43C978	}
+}
+
 extern "C"
 {
 	__declspec(dllexport) void Init(const char *path, const HelperFunctions &helperFunctions)
@@ -106,6 +113,8 @@ extern "C"
 			WriteData((ObjectFuncPtr*)0x6C0879, Omochao_RandomMessage);
 		if (settings->getBool("", "TalkOverEachOther"))
 			WriteData((void*)0x6BEA14, 0x90u, 6);
+		if (settings->getBool("", "AlwaysShowBossHint"))
+			WriteJump((void*)0x43C970, ShowBossHint);
 		if (settings->getBool("", "ReplaceRings"))
 		{
 			srand(_time32(nullptr));
