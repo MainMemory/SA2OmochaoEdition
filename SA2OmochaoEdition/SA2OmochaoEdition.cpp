@@ -301,6 +301,11 @@ extern "C"
 		}
 		if (settings->getBool("", "ReplaceChaoKey"))
 			WriteCall((void*)0x6DE63B, ReplaceChaosDrive);
+		if (settings->getBool("", "ReplaceSmallAnimals"))
+		{
+			WriteJump((void*)0x48AC30, LoadOmochao2);
+			WriteJump((void*)0x48ADE0, RingToOmochao);
+		}
 		delete settings;
 	}
 
