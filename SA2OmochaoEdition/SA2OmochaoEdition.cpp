@@ -299,6 +299,8 @@ extern "C"
 			WriteCall((void*)0x47ADC0, ReplaceChaosDrive);
 			WriteCall((void*)0x47ADE5, LoadOmochao2);
 		}
+		if (settings->getBool("", "ReplaceChaoKey"))
+			WriteCall((void*)0x6DE63B, ReplaceChaosDrive);
 		delete settings;
 	}
 
