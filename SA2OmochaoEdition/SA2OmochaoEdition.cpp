@@ -107,12 +107,46 @@ static inline void PlaySoundProbably(int a1, int a2, int a3, int a4)
 	}
 }
 
+FunctionPointer(CharObj1 *, AllocateEntityData1, (), 0x470B40);
+ObjectMaster *LoadOmochao(NJS_VECTOR *position)
+{
+	ObjectMaster *obj = LoadObject(Omochao_Main, 2, "ObjectMessenger");
+	if (obj)
+	{
+		CharObj1 *v7 = AllocateEntityData1();
+		if (v7)
+		{
+			obj->Data1 = v7;
+			void *v10 = AllocateEntityData2();
+			if (v10)
+			{
+				obj->field_38 = v10;
+				v7->Position = *position;
+				v7->Scale.x = (float)(rand() % StageMessageCount); // select a random hint from the level's hint message file
+				v7->Scale.y = 15;
+				v7->Scale.z = 0;
+				return obj;
+			}
+			else
+				DeleteObject_(obj);
+		}
+		else
+			DeleteObject_(obj);
+	}
+	return nullptr;
+}
+
+ObjectMaster *LoadOmochao2(float x, float y, float z)
+{
+	NJS_VECTOR pos = { x, y, z };
+	return LoadOmochao(&pos);
+}
+
 short maxringloss;
 VoidFunc(sub_429000, 0x429000);
 VoidFunc(sub_429710, 0x429710);
 FastcallFunctionPointer(float, sub_42AAB0, (Angle ang), 0x42AAB0);
 FastcallFunctionPointer(float, sub_42AC30, (Angle ang), 0x42AC30);
-FunctionPointer(void *, AllocateEntityData1, (), 0x470B40);
 DataPointer(float*, dword_1A557FC, 0x1A557FC);
 DataPointer(Angle, GravityAngle_X, 0x1DE949C);
 DataPointer(NJS_VECTOR, Gravity, 0x1DE94A0);
@@ -127,57 +161,38 @@ void __cdecl DropOmochao(int playerNum)
 		if (rings > maxringloss)
 			rings = maxringloss;
 		AddRings(playerNum, -rings);
-		CharObj1 *v13 = MainCharObj1[playerNum];
+		NJS_VECTOR *pos = &MainCharObj1[playerNum]->Position;
 		int v5 = 0;
 		do
 		{
-			ObjectMaster *scatterObject = LoadObject(Omochao_Main, 2, "ObjectMessenger");
+			ObjectMaster *scatterObject = LoadOmochao(pos);
 			if (scatterObject)
 			{
-				CharObj1 *v7 = (CharObj1*)AllocateEntityData1();
-				if (v7)
+				CharObj1 *v7 = scatterObject->Data1;
+				v7->Rotation.y = (signed int)(((double)(v5 / rings) + v3 * 0.000030517578125 * 360.0) * 182.0444488525391);
+				NJS_VECTOR v61;
+				v61.y = 1.8f;
+				v61.x = sub_42AAB0(v7->Rotation.y) * 0.4000000059604645f;
+				v61.z = sub_42AC30(v7->Rotation.y) * 0.4000000059604645f;
+				sub_429710();
+				float *v20 = dword_1A557FC;
+				if (dword_1A557FC)
 				{
-					scatterObject->Data1 = v7;
-					void *v10 = AllocateEntityData2();
-					if (v10)
-					{
-						scatterObject->field_38 = v10;
-						v7->Position.x = v13->Position.x;
-						v7->Position.y = v13->Position.y;
-						v7->Position.z = v13->Position.z;
-						v7->Rotation.y = (signed int)(((double)(v5 / rings) + v3 * 0.000030517578125 * 360.0) * 182.0444488525391);
-						NJS_VECTOR v61;
-						v61.y = 1.8f;
-						v61.x = sub_42AAB0(scatterObject->Data1->Rotation.y) * 0.4000000059604645f;
-						v61.z = sub_42AC30(scatterObject->Data1->Rotation.y) * 0.4000000059604645f;
-						sub_429710();
-						float *v20 = dword_1A557FC;
-						if (dword_1A557FC)
-						{
-							memset(dword_1A557FC, 0, 0x30u);
-							*v20 = 1.0;
-							v20[5] = 1.0;
-							v20[10] = 1.0;
-						}
-						if (GravityAngle_X)
-						{
-							sub_427680(v20, GravityAngle_X);
-						}
-						if (GravityAngle_Z)
-						{
-							sub_4274E0(v20, GravityAngle_Z);
-						}
-						sub_4273B0(&v61, (NJS_VECTOR*)scatterObject->field_38, v20);
-						sub_429000();
-						scatterObject->Data1->Scale.x = (float)(rand() % StageMessageCount); // select a random hint from the level's hint message file
-						scatterObject->Data1->Scale.y = 15;
-						scatterObject->Data1->Scale.z = 0;
-					}
-					else
-						DeleteObject_(scatterObject);
+					memset(dword_1A557FC, 0, 0x30u);
+					*v20 = 1.0;
+					v20[5] = 1.0;
+					v20[10] = 1.0;
 				}
-				else
-					DeleteObject_(scatterObject);
+				if (GravityAngle_X)
+				{
+					sub_427680(v20, GravityAngle_X);
+				}
+				if (GravityAngle_Z)
+				{
+					sub_4274E0(v20, GravityAngle_Z);
+				}
+				sub_4273B0(&v61, (NJS_VECTOR*)scatterObject->field_38, v20);
+				sub_429000();
 			}
 			v5 += 360;
 			--rings;
@@ -189,6 +204,20 @@ void __cdecl DropOmochao(int playerNum)
 	if (v9 != Characters_MechEggman && v9 != Characters_MechTails)
 	{
 		KillPlayer(playerNum);
+	}
+}
+
+static void __declspec(naked) ReplaceChaosDrive()
+{
+	__asm
+	{
+		push ebx // a1
+
+		// Call your __cdecl function here:
+		call LoadOmochao
+
+		pop ebx // a1
+		retn
 	}
 }
 
@@ -264,6 +293,11 @@ extern "C"
 		{
 			WriteJump(DropRings, DropOmochao);
 			maxringloss = settings->getInt("", "MaxDroppedOmochao", 20);
+		}
+		if (settings->getBool("", "ReplaceEnemyDrops"))
+		{
+			WriteCall((void*)0x47ADC0, ReplaceChaosDrive);
+			WriteCall((void*)0x47ADE5, LoadOmochao2);
 		}
 		delete settings;
 	}
