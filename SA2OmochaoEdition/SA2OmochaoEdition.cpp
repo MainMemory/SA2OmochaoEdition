@@ -280,7 +280,11 @@ extern "C"
 		else if (allmsg)
 			WriteData((ObjectFuncPtr*)0x6C0879, Omochao_RandomMessage);
 		if (settings->getBool("", "TalkOverEachOther"))
+		{
+			WriteData((void*)0x6BE627, 0x90u, 2);
+			WriteData((void*)0x6BE963, 0x90u, 6);
 			WriteData((void*)0x6BEA14, 0x90u, 6);
+		}
 		if (settings->getBool("", "AlwaysShowBossHint"))
 			WriteJump((void*)0x43C970, ShowBossHint);
 		if (settings->getBool("", "ReplaceRings"))
