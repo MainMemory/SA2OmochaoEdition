@@ -221,6 +221,30 @@ static void __declspec(naked) ReplaceChaosDrive()
 	}
 }
 
+static void __declspec(naked) PickupObjectToOmochao()
+{
+	__asm
+	{
+		push[esp + 10h] // a6
+		push[esp + 10h] // a5
+		push[esp + 10h] // a4
+		push[esp + 10h] // a3
+		push ecx // a2
+		push eax // a1
+
+		// Call your __cdecl function here:
+		call RingToOmochao
+
+		pop eax // a1
+		pop ecx // a2
+		add esp, 4 // a3
+		add esp, 4 // a4
+		add esp, 4 // a5
+		add esp, 4 // a6
+		retn
+	}
+}
+
 DataPointer(char **, StageMessageList, 0x1AEFD6C);
 DataPointer(char **, SysMessageList, 0x1AEFD70);
 DataPointer(int, SysMessageCount, 0xB5D204);
@@ -315,6 +339,8 @@ extern "C"
 			WriteJump((void*)0x48AC30, LoadOmochao2);
 			WriteJump((void*)0x48ADE0, RingToOmochao);
 		}
+		if (settings->getBool("", "ReplacePickupObjects"))
+			WriteJump((void*)0x6BC990, PickupObjectToOmochao);
 		if (settings->getBool("", "ReplaceChao"))
 			WriteJump((void*)0x54FFCD, (void*)0x550074);
 		delete settings;
