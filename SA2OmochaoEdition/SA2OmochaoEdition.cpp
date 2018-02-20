@@ -262,6 +262,11 @@ __declspec(naked) void ShowBossHint()
 
 extern "C"
 {
+	__declspec(dllexport) void OnFrame()
+	{
+		*(char*)0x174B01D = 6;
+	}
+
 	__declspec(dllexport) void Init(const char *path, const HelperFunctions &helperFunctions)
 	{
 		const IniFile *settings = new IniFile(std::string(path) + "\\config.ini");
