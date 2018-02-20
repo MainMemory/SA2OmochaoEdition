@@ -221,12 +221,6 @@ static void __declspec(naked) ReplaceChaosDrive()
 	}
 }
 
-void ReplaceChaoHat(int a1, NJS_VECTOR *pos, int a3, NJS_VECTOR *speed)
-{
-	ObjectMaster *obj = LoadOmochao(pos);
-	*(NJS_VECTOR*)obj->field_38 = *speed;
-}
-
 DataPointer(char **, StageMessageList, 0x1AEFD6C);
 DataPointer(char **, SysMessageList, 0x1AEFD70);
 DataPointer(int, SysMessageCount, 0xB5D204);
@@ -316,10 +310,8 @@ extern "C"
 			WriteJump((void*)0x48AC30, LoadOmochao2);
 			WriteJump((void*)0x48ADE0, RingToOmochao);
 		}
-		if (settings->getBool("", "ReplaceChaoGardenDigObjects"))
-			WriteCall((void*)0x530A70, ReplaceChaoHat);
 		if (settings->getBool("", "ReplaceChao"))
-			WriteJump((void*)0x54FFC3, (void*)0x550074);
+			WriteJump((void*)0x54FFCD, (void*)0x550074);
 		delete settings;
 	}
 
