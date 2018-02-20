@@ -318,6 +318,8 @@ extern "C"
 		}
 		if (settings->getBool("", "ReplaceChaoGardenDigObjects"))
 			WriteCall((void*)0x530A70, ReplaceChaoHat);
+		if (settings->getBool("", "ReplaceChao"))
+			WriteJump((void*)0x54FFC3, (void*)0x550074);
 		delete settings;
 	}
 
