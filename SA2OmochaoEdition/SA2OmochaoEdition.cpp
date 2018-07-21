@@ -291,9 +291,11 @@ extern "C"
 	__declspec(dllexport) void OnFrame()
 	{
 		*(char*)0x174B01D = 6;
-		if (spawnrandomly && GameState == GameStates_Ingame && CurrentLevel < LevelIDs_Route101280 && --timeuntilspawn == 0)
+		if (spawnrandomly && GameState == GameStates_Ingame && CurrentLevel < LevelIDs_Route101280 && *(void**)0xB5838C && --timeuntilspawn == 0)
 		{
-			AllocateObjectMaster(CheckLoadOmochao, 2, "CheckLoadOmochao");
+			ObjectMaster *omo = LoadOmochao(&MainCharObj1[0]->Position);
+			omo->Data1.Entity->NextAction |= 3; // force Omochao to follow the player
+			omo->Data1.Entity->Action = 5; // force Omochao into the talking action
 			if (minspawntime < maxspawntime)
 				timeuntilspawn = gen() % (maxspawntime - minspawntime) + minspawntime;
 			else
